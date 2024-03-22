@@ -1,5 +1,5 @@
 # Build the operator
-FROM mcr.microsoft.com/dotnet/sdk:latest as build
+FROM mcr.microsoft.com/dotnet/sdk:6.0 as build
 WORKDIR /operator
 
 COPY ./ ./
@@ -9,10 +9,10 @@ RUN chmod +x ./cfssl
 RUN chmod +x ./cfssljson
 RUN mkdir out
 RUN cp cfssl cfssljson out/
-RUN dotnet publish -c Release -o out kubernetes-runbook-operator.csproj
+RUN dotnet publish -c Release -o out ./kubernetes-runbook-operator.csproj
 
 # The runner for the application
-FROM mcr.microsoft.com/dotnet/aspnet:latest as final
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 as final
 
 RUN addgroup k8s-operator && useradd -G k8s-operator operator-user
 
@@ -22,4 +22,4 @@ RUN chown operator-user:k8s-operator -R .
 
 USER operator-user
 
-ENTRYPOINT [ "dotnet", "kubernetes-runbook-operator.dll" ]
+ENTRYPOINT [ "dotnet", "kubernetes-runbook-operator.dll", "--run-only" ]

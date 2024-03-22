@@ -11,6 +11,13 @@ app.MapControllerRoute(
        name: "default",
           pattern: "{controller=Home}/{action=Index}/{id?}");
 
-app.RunOperatorAsync(args);
+if (!args.Contains("--run-only"))
+{
+    await app.RunOperatorAsync(args);
+}
+else
+{
+    app.RunOperatorAsync(args);
+    app.Run();
+}
 
-app.Run();
